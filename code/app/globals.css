@@ -1,56 +1,73 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --bg: 0 0% 100%;
-  --fg: 222.2 47.4% 11.2%;
+/*
+  Design Tokens (Baseline)
+  - All colors are defined as HSL triplets to work with Tailwind's hsl(var(--token)) pattern.
+  - Keep tokens minimal and semantic.
+*/
 
-  --card: 0 0% 100%;
-  --card-fg: 222.2 47.4% 11.2%;
+@layer base {
+  :root {
+    /* Surfaces */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-  --muted: 210 40% 96.1%;
-  --muted-fg: 215.4 16.3% 46.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 224.3 76.3% 48%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-  --primary: 224.3 76.3% 48%;
-  --primary-fg: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
 
-  --secondary: 210 40% 96.1%;
-  --secondary-fg: 222.2 47.4% 11.2%;
+    /* Brand */
+    --primary: 231 83% 60%;
+    --primary-foreground: 0 0% 100%;
 
-  --danger: 0 72% 51%;
-  --danger-fg: 210 40% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-  --success: 142 71% 45%;
-  --success-fg: 210 40% 98%;
+    /* Status */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
 
-  --warning: 38 92% 50%;
-  --warning-fg: 222.2 47.4% 11.2%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 222.2 84% 4.9%;
 
-  --radius: 8px;
+    --danger: 0 84.2% 60.2%;
+    --danger-foreground: 0 0% 100%;
+
+    /* Effects */
+    --ring: 231 83% 60%;
+
+    --radius: 10px;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    text-rendering: geometricPrecision;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+      "Segoe UI Emoji";
+  }
+
+  a {
+    @apply text-foreground underline-offset-4 hover:underline;
+  }
 }
 
-html,
-body {
-  height: 100%;
-}
-
-body {
-  background: hsl(var(--bg));
-  color: hsl(var(--fg));
-}
-
-/* Better focus ring baseline */
-:where(a, button, input, textarea, select):focus-visible {
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
-}
-
-/* Prevent iOS zooming */
-input,
-textarea,
-select {
-  font-size: 16px;
+@layer utilities {
+  .focus-ring {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
 }
