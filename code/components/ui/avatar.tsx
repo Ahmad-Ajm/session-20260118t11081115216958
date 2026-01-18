@@ -1,44 +1,50 @@
-import Image from "next/image";
+import * as React from "react";
+
 import { cn } from "@/lib/utils/cn";
 
-export function Avatar({
-  name,
-  src,
-  size = 40,
-  className,
-}: {
-  name: string;
+export type AvatarProps = {
   src?: string;
-  size?: number;
+  alt?: string;
+  fallback?: string;
+  size?: "sm" | "md" | "lg";
   className?: string;
-}) {
-  const initials = name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((p) => p[0])
-    .join("");
+};
+
+const sizes = {
+  sm: "h-8 w-8 text-xs",
+  md: "h-10 w-10 text-sm",
+  lg: "h-12 w-12 text-base",
+};
+
+export function Avatar({
+  src,
+  alt,
+  fallback,
+  size = "md",
+  className,
+}: AvatarProps) {
+  const [errored, setErrored] = React.useState(false);
+  const showImg = Boolean(src) && !errored;
 
   return (
     <div
       className={cn(
-        "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted text-muted-fg",
-        className,
+        "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted text-muted-foreground",
+        sizes[size],
+        className
       )}
-      style={{ width: size, height: size }}
-      aria-label={name}
-      title={name}
+      aria-label={alt}
     >
-      {src ? (
-        <Image
+      {showImg ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
           src={src}
-          alt={name}
-          fill
-          sizes={`${size}px`}
-          className="object-cover"
+          alt={alt ?? ""}
+          className="h-full w-full object-cover"
+          onError={() => setErrored(true)}
         />
       ) : (
-        <span className="text-sm font-semibold">{initials}</span>
+        <span className="font-medium">{fallback ?? "؟"}</span>
       )}
     </div>
   );
