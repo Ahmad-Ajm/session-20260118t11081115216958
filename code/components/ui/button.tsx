@@ -10,6 +10,7 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
+  asChild?: boolean;
 };
 
 const base =
@@ -41,11 +42,22 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       loading,
       disabled,
       children,
+      asChild,
       ...props
     },
     ref
   ) => {
     const isDisabled = disabled || loading;
+
+    if (asChild) {
+      // Minimal Slot implementation (no external libs)
+      const child = React.Children.only(children) as React.ReactElement;
+      return React.cloneElement(child, {
+        className: cn(base, variants[variant], sizes[size], child.props.className, className),
+        "aria-disabled": isDisabled,
+        "aria-busy": loading ? true : undefined,
+      });
+    }
 
     return (
       <button
