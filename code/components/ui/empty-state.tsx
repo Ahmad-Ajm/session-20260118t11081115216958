@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { cn } from "@/lib/utils/cn";
 
 export function EmptyState({
@@ -15,13 +16,15 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "rounded-lg border border-border bg-card p-6 text-center text-card-fg",
-        className,
+        "rounded-lg border bg-card p-8 text-center text-card-foreground",
+        className
       )}
     >
-      <h3 className="text-lg font-semibold">{title}</h3>
-      {description ? <p className="mt-1 text-sm text-muted-fg">{description}</p> : null}
-      {action ? <div className="mt-4 flex justify-center">{action}</div> : null}
+      <p className="text-base font-semibold">{title}</p>
+      {description ? (
+        <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+      ) : null}
+      {action ? <div className="mt-5 flex justify-center">{action}</div> : null}
     </div>
   );
 }
