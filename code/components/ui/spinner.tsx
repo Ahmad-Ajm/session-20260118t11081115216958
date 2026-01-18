@@ -1,13 +1,39 @@
+import * as React from "react";
+
 import { cn } from "@/lib/utils/cn";
 
-export function Spinner({ className }: { className?: string }) {
+export function Spinner({
+  className,
+  size = "md",
+  ...props
+}: React.SVGProps<SVGSVGElement> & { size?: "sm" | "md" | "lg" }) {
+  const s = size === "sm" ? 16 : size === "lg" ? 24 : 20;
+
   return (
-    <span
-      className={cn(
-        "inline-block h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent",
-        className,
-      )}
-      aria-label="Loading"
-    />
+    <svg
+      width={s}
+      height={s}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={cn("animate-spin", className)}
+      aria-hidden="true"
+      {...props}
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        d="M4 12a8 8 0 018-8"
+        stroke="currentColor"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
