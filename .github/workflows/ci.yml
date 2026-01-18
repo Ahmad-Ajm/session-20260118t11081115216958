@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Normalize featureKey input (take first CSV item)
-      - id: normalize
+        id: normalize
         shell: bash
         run: |
           RAW="${{ github.event.inputs.featureKey }}"
