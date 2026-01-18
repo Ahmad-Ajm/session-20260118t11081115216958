@@ -1,42 +1,75 @@
 import type { Config } from "tailwindcss";
 
-export default {
+const config: Config = {
+  darkMode: ["class"],
   content: [
-    "./app/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./lib/**/*.{ts,tsx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./hooks/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    container: {
+      center: true,
+      padding: "1rem",
+      screens: {
+        "2xl": "1200px",
+      },
+    },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui"],
+      },
       colors: {
-        bg: "hsl(var(--bg))",
-        fg: "hsl(var(--fg))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+
         card: "hsl(var(--card))",
-        "card-fg": "hsl(var(--card-fg))",
+        "card-foreground": "hsl(var(--card-foreground))",
+
         muted: "hsl(var(--muted))",
-        "muted-fg": "hsl(var(--muted-fg))",
+        "muted-foreground": "hsl(var(--muted-foreground))",
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+
         primary: "hsl(var(--primary))",
-        "primary-fg": "hsl(var(--primary-fg))",
+        "primary-foreground": "hsl(var(--primary-foreground))",
+
         secondary: "hsl(var(--secondary))",
-        "secondary-fg": "hsl(var(--secondary-fg))",
-        danger: "hsl(var(--danger))",
-        "danger-fg": "hsl(var(--danger-fg))",
+        "secondary-foreground": "hsl(var(--secondary-foreground))",
+
         success: "hsl(var(--success))",
-        "success-fg": "hsl(var(--success-fg))",
+        "success-foreground": "hsl(var(--success-foreground))",
+
         warning: "hsl(var(--warning))",
-        "warning-fg": "hsl(var(--warning-fg))"
+        "warning-foreground": "hsl(var(--warning-foreground))",
+
+        danger: "hsl(var(--danger))",
+        "danger-foreground": "hsl(var(--danger-foreground))",
+
+        ring: "hsl(var(--ring))",
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)"
+        sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        soft: "0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06)"
-      }
-    }
-  }
-} satisfies Config;
+        card: "0 1px 2px rgba(0,0,0,0.06)",
+      },
+      keyframes: {
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+      },
+      animation: {
+        "fade-in": "fade-in 150ms ease-out",
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;
