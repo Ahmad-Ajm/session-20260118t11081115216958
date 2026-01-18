@@ -4,23 +4,22 @@
 
 - Reviewed `conversation-summary.md` (approved; not modified).
 - Verified `features-map.md` is already populated (not a template) and matches the current approved feature list (FEAT-001 … FEAT-013).
+- Aligned feature status convention per workflow note: all features are currently **Not-Start**.
 
 ## Current status snapshot
 
-- FEAT-001 (UX/UI Baseline/System): **In-Progress**
-- FEAT-002 … FEAT-013: **Not-Start**
+- FEAT-001 … FEAT-013: **Not-Start**
 
 ## Execution plan (high-level)
 
 1) FEAT-001 – UX/UI baseline
    - Establish global layout, navigation shell, base components, and performance baseline (NFR-001).
-   - Output enables consistent UI implementation for upcoming screens.
 
 2) FEAT-008 – Auth (registration/login)
    - Required before enabling add/edit of CVs.
 
-3) FEAT-009 + FEAT-002 + CV field features (FEAT-003..FEAT-007)
-   - Define CV domain model + API and implement the single-page CV form (create/update).
+3) Core CV (domain + create/edit)
+   - FEAT-009 (CV entity creation/storage) + FEAT-002 (single-page form) + field features (FEAT-003..FEAT-007).
 
 4) Public browsing/search/export
    - FEAT-010 list/details, then FEAT-012 search + FEAT-013 filters, then FEAT-011 export with masking.
