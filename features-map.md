@@ -84,7 +84,7 @@
 | FeatureId      | FeatureName        | FeatureType | Summary                                      | Personas         | Requirements      | SpecFolders                             | Priority | Status      |
 |----------------|--------------------|-------------|----------------------------------------------|------------------|-------------------|------------------------------------------|----------|------------|
 | FEAT-EXAMPLE01 | Example Feature    | CRUD        | مثال لميزة CRUD كاملة (إنشاء/عرض/تعديل/حذف) | Admin, User      | FR-EX-01, FR-EX-02 | 04-domain, 07-api, 08-ui                | P1       | Planned    |
-| FEAT-001 | UX/UI (Baseline/System) | CRUD | إعداد أساسيات الواجهة والتصميم العام ومكونات النظام الأساسية للتطبيق. | User, Visitor | NFR-001 | 08-ui | P0 | In-Progress |
+| FEAT-001 | UX/UI (Baseline/System) | CRUD | إعداد أساسيات الواجهة والتصميم العام ومكونات النظام الأساسية للتطبيق. | User, Visitor | NFR-001 | 08-ui | P0 | Not-Start |
 | FEAT-002 | صفحة واحدة لإدخال بيانات CV | CRUD | شاشة واحدة تجمع إدخال وتعديل بيانات السيرة الذاتية في نموذج موحّد. | User |  | 08-ui, 07-api, 04-domain | P0 | Not-Start |
 | FEAT-003 | حقول: الاسم | CRUD | دعم إدخال/تخزين/عرض حقل الاسم ضمن بيانات السيرة الذاتية. | User, Visitor |  | 04-domain, 07-api, 08-ui | P0 | Not-Start |
 | FEAT-004 | حقول: الموبايل | CRUD | دعم إدخال/تخزين/عرض رقم الموبايل ضمن بيانات السيرة الذاتية. | User |  | 04-domain, 07-api, 08-ui | P0 | Not-Start |
