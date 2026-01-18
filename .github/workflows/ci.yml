@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
@@ -7,72 +7,73 @@ on:
     branches: [ main ]
   workflow_dispatch:
     inputs:
-      featureKey: 
-        description: 'The feature key to run CI for (e.g., FEAT-123)'
+      featureKey:
+        description: 'Feature key (supports CSV but only first item will be used), e.g., FEAT-001'
         required: true
         type: string
-      attempt: 
-        description: 'The attempt number for this CI run'
+      attempt:
+        description: 'Attempt number for this CI run'
         required: true
         type: string
 
 env:
-  DOTNET_VERSION: '8.0.x'
   NODE_VERSION: '18.x'
-  BACKEND_DIR: 'code/backend'
-  FRONTEND_DIR: 'code'  # adjusted because there is no code/frontend directory
+  FRONTEND_DIR: 'code'
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Normalize featureKey input (take first CSV item)
+      - id: normalize
+        shell: bash
+        run: |
+          RAW="${{ github.event.inputs.featureKey }}"
+          if [ -z "$RAW" ]; then
+            # Fallback for non-dispatch events
+            RAW="FEAT-001"
+          fi
+          # take first item and trim whitespace
+          FEATURE_KEY="$(echo "$RAW" | awk -F',' '{print $1}' | xargs)"
+          echo "featureKey=$FEATURE_KEY" >> "$GITHUB_OUTPUT"
+          echo "Normalized featureKey: $FEATURE_KEY"
 
-    - name: Restore backend dependencies
-      run: |
-        cd ${{ env.BACKEND_DIR }}
-        dotnet restore ./CVSystem.sln
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
 
-    - name: Build backend
-      run: |
-        cd ${{ env.BACKEND_DIR }}
-        dotnet build ./CVSystem.sln --no-restore
+      - name: Install dependencies
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm ci
 
-    - name: Test backend
-      run: |
-        cd ${{ env.BACKEND_DIR }}
-        dotnet test ./CVSystem.sln --no-build --verbosity normal || echo "No backend tests found, skipping."
+      - name: Lint
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run lint
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
+      - name: Typecheck
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run typecheck
 
-    - name: Install frontend dependencies
-      run: |
-        cd ${{ env.FRONTEND_DIR }}
-        npm ci || echo "No frontend project found, skipping npm ci."
+      - name: Build
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run build
 
-    - name: Build frontend
-      run: |
-        cd ${{ env.FRONTEND_DIR }}
-        npm run build || echo "No frontend build script found, skipping build."
+      - name: Update progress report (feature folder)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          FEATURE_KEY="${{ steps.normalize.outputs.featureKey }}"
+          ATTEMPT="${{ github.event.inputs.attempt }}"
+          REPORT_FILE="psec-kit-file/${FEATURE_KEY}/PROGRESS_REPORT.md"
 
-    - name: Update progress report
-      run: |
-        FEATURE_KEY="${{ github.event.inputs.featureKey }}"
-        ATTEMPT="${{ github.event.inputs.attempt }}"
-        REPORT_FILE="psec-kit-file/${FEATURE_KEY}/PROGRESS_REPORT.md"
-
-        if [ -f "$REPORT_FILE" ]; then
-          echo "CI Run for Feature $FEATURE_KEY, Attempt $ATTEMPT: SUCCESS or completed with warnings" >> "$REPORT_FILE"
-        else
-          echo "Progress report file not found at $REPORT_FILE. Skipping update." 
-        fi
-      shell: bash
+          if [ -f "$REPORT_FILE" ]; then
+            echo "CI Run for Feature $FEATURE_KEY, Attempt $ATTEMPT: SUCCESS" >> "$REPORT_FILE"
+          else
+            echo "Progress report file not found at $REPORT_FILE. Skipping update."
+          fi
