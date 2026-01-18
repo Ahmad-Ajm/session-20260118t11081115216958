@@ -1,79 +1,120 @@
 # Implementation Plan – FEAT-001
 
 ## 1. Executive Summary
-- تنفيذ واجهة Baseline عبر Next.js + Tailwind تتضمن Layout عام، صفحة رئيسية، وتوجيهات (Routes) لصفحات Placeholder تمثل الميزات القادمة.
-- بدون أي تكامل API أو تفاعل (فورم/حفظ) في هذا الإصدار.
+تنفيذ Baseline للواجهة الأمامية يتضمن: إعداد مشروع Next.js + Tailwind، تصميم هوية بصرية أولية، بناء مكوّنات UI مشتركة، إعداد Layouts ومسارات أولية، وتجهيز Mock API لتطوير الشاشات قبل جاهزية الـ Backend.
 
 ## 2. Architecture & Components
 
-### Frontend (Next.js + Tailwind)
-- **Routing (App Router)**:
-  - `app/layout.tsx`: Root layout (HTML shell, header/footer, container).
-  - `app/page.tsx`: Home.
-  - Placeholders (static pages):
-    - `app/cv/page.tsx` (إدخال/تعديل CV – لاحقًا FEAT-002)
-    - `app/cvs/page.tsx` (قائمة السير الذاتية – لاحقًا FEAT-010)
-    - `app/search/page.tsx` (بحث – لاحقًا FEAT-012)
-    - `app/filters/page.tsx` (تصفية – لاحقًا FEAT-013)
-    - `app/auth/page.tsx` (تسجيل/دخول – لاحقًا FEAT-008)
-    - `app/export/page.tsx` (تصدير – لاحقًا FEAT-011)
-- **Shared UI Components**:
-  - `components/AppHeader.tsx`: شعار/اسم المشروع + NavLinks.
-  - `components/AppFooter.tsx`: حقوق/روابط مساعدة.
-  - `components/NavLink.tsx`: Link مع حالة active (اختياري بدون تعقيد).
-  - `components/PlaceholderPage.tsx`: عنوان + وصف + (Coming soon) + روابط.
-- **Styling**:
-  - Tailwind CSS مع إعدادات بسيطة:
-    - `tailwind.config.*` لتفعيل paths.
-    - `globals.css` لإضافة base styles (font, bg, link styles).
+### Frontend (Next.js)
+- **Stack**:
+  - Next.js (App Router)
+  - TypeScript
+  - TailwindCSS
+  - (اختياري) Radix UI primitives للـ Dialog/Dropdown
+  - (اختياري) MSW لموكات API
+- **App Structure**:
+  - `app/layout.tsx`: Root layout (HTML, body, fonts, direction)
+  - `app/(public)/layout.tsx`: Public layout
+  - `app/(public)/page.tsx`: Home
+  - `app/cv/page.tsx`: CV list (placeholder)
+  - `app/cv/edit/page.tsx`: CV form (placeholder)
+  - `app/auth/login/page.tsx`: Login placeholder
+  - `app/auth/register/page.tsx`: Register placeholder
+- **Design System**:
+  - Tokens: color palette, typography scale, spacing, radius, shadows
+  - CSS vars in `styles/globals.css` + Tailwind config
+- **UI Components (components/ui)**:
+  - `Button`, `Input`, `Textarea`, `Select`
+  - `FormField` wrapper (label, error, hint)
+  - `Card`, `Badge`, `Avatar`
+  - `Dialog/Modal`
+  - `Toast` (بسيط) + `useToast` hook
+  - `Spinner`, `Skeleton`, `EmptyState`
+- **Layout Components (components/layout)**:
+  - `Header`, `Nav`, `Footer`
+  - `Container` + `PageTitle`
 
-### Backend
-- غير مطلوب في هذه الميزة (API لاحقًا).
+### Backend / API (Assumption for this feature)
+- لا يتم بناء Backend فعلي ضمن FEAT-001.
+- **Mock API**:
+  - طريقان مقترحان:
+    1) MSW interceptors + handlers
+    2) Next.js Route Handlers في `app/api/*` تعيد بيانات ثابتة
+  - الهدف: تمكين صفحات placeholder من عرض بيانات تجريبية (قائمة CV مختصرة مثلًا) دون الاعتماد على FEAT-009/010.
 
 ## 3. Data Model Definition
-- لا يوجد نموذج بيانات/Entities في هذه الميزة.
+لا يوجد نموذج بيانات Domain رسمي ضمن هذه الميزة. فقط نماذج TypeScript مؤقتة لمساعدة الـ UI:
+```ts
+export type CvListItem = {
+  id: string;
+  fullName: string;
+  avatarUrl?: string;
+  headline?: string;
+  updatedAt: string;
+};
+```
 
 ## 4. FR-to-Implementation Mapping
-| FR ID | Frontend Components |
-|-------|---------------------|
-| FR-FEAT-001-001 | `app/layout.tsx`, `components/AppHeader.tsx`, `components/AppFooter.tsx` |
-| FR-FEAT-001-002 | `app/page.tsx` |
-| FR-FEAT-001-003 | `app/*/page.tsx`, `components/PlaceholderPage.tsx` |
-| FR-FEAT-001-004 | `components/AppHeader.tsx` (Nav) |
-| FR-FEAT-001-005 | `globals.css`, Tailwind utility usage |
+> لا توجد FRs رقمية في Feature Map لهذه الميزة. الربط هنا حسب مخرجات الميزة.
+
+| Deliverable | Frontend Components |
+|-----------|----------------------|
+| Design tokens + base styles | `styles/globals.css`, `tailwind.config.*` |
+| Shared UI components | `components/ui/*` |
+| Layouts + routes | `app/**/layout.tsx`, `app/**/page.tsx` |
+| Mock API layer | `lib/api/*`, `lib/mocks/*` أو `app/api/*` |
+| Performance baseline | next config + usage patterns (Image, dynamic import) |
 
 ## 5. Implementation Phases
 
-### Phase 1: Project/UI Setup
-1. تهيئة Next.js (TypeScript) وإضافة Tailwind.
-2. إعداد `globals.css` وتثبيت base styles.
+### Phase 1: Project Setup
+1. إنشاء/تأكيد إعداد Next.js + TS.
+2. إعداد TailwindCSS + PostCSS.
+3. إعداد خطوط عربية (مثال: Cairo/Noto Kufi) عبر `next/font`.
+4. إعداد RTL افتراضي في `app/layout.tsx` (dir="rtl") + CSS support.
 
-### Phase 2: Layout + Navigation
-1. إنشاء `app/layout.tsx`.
-2. بناء `AppHeader` مع روابط للصفحات.
-3. بناء `AppFooter`.
+### Phase 2: Design Tokens & Global Styles
+1. تعريف لوحة ألوان (primary/secondary, success/warn/danger, gray scale).
+2. تعريف Typography scale ومسافات قياسية.
+3. تطبيق tokens عبر CSS variables + Tailwind theme extension.
 
-### Phase 3: Pages
-1. الصفحة الرئيسية (Home) مع تعريف + CTA links.
-2. صفحات Placeholder لكل مسار مستهدف.
-3. صفحة 404 بسيطة (اختياري حسب الافتراضي).
+### Phase 3: UI Kit (System Components)
+1. بناء Button variants + sizes + states.
+2. بناء Form controls + حالات الخطأ.
+3. بناء Card/Badge/Avatar.
+4. Dialog/Modal + Toast.
+5. Loading/Skeleton + EmptyState.
 
-### Phase 4: Polish
-1. مراجعة responsive (mobile-first).
-2. مراجعة accessiblity (headings, landmarks, focus).
-3. مراجعة consistency وlint/format.
+### Phase 4: Layouts & Pages (Placeholders)
+1. Public layout مع Header بسيط وروابط أساسية.
+2. صفحات placeholder للمسارات الأساسية.
+3. ربط الصفحات ببيانات mock لإظهار شكل حقيقي.
+
+### Phase 5: Quality & NFR-001 (Performance)
+1. استخدام `next/image` للصور.
+2. تفعيل `dynamic()` حيث يلزم.
+3. قياس سريع: Lighthouse baseline (محلي) وتوثيق النتائج.
 
 ## 6. Non-Functional Implementation
-- **Performance (NFR-001)**: صفحات ثابتة، minimal JS، استخدام مكونات بسيطة بدون مكتبات ثقيلة.
-- **Security**: لا توجد بيانات حساسة ولا auth حالياً.
-- **Testing**: Smoke test يدوي + (اختياري) basic lint/build.
+- **Performance (NFR-001)**:
+  - تجنّب تحميل مكتبات ثقيلة غير لازمة.
+  - استخدام `next/font` لتقليل CLS.
+  - اعتماد skeleton بدل spinners للصفحات القائمة على بيانات.
+- **Accessibility**:
+  - عناصر form مرتبطة بـ labels.
+  - تباين ألوان مقبول.
+  - دعم keyboard focus.
+- **Maintainability**:
+  - توثيق استخدام كل component ضمن comments + أمثلة استعمال بسيطة داخل صفحة `/ui-kit` (داخلية/مخفية لاحقًا).
 
 ## 7. Dependencies & Risks
-- **Dependencies**: Node.js, Next.js, Tailwind.
+- **Dependencies**:
+  - لا يوجد.
 - **Risks**:
-  - عدم وضوح RTL/i18n قد يسبب إعادة عمل لاحقًا.
-  - قد تتغير أسماء الصفحات/المسارات لاحقًا حسب تصميم IA النهائي.
+  - عدم وضوح متطلبات اللغات بالكامل (RTL/LTR) قد يؤدي لتعديلات لاحقة.
+  - عدم وضوح UI المطلوب (Minimal vs. Rich)؛ سنعتمد Baseline بسيط قابل للتوسعة.
 
 ## 8. Assumptions
-- المستودع لا يحتوي كود جاهز؛ سننشئ بنية ملفات UI داخل `app/`.
-- الواجهة العربية مبدئيًا بدون إلزام RTL، مع إمكانية تفعيلها لاحقًا عند اعتمادها.
+- التطبيق موجه أساسًا للمستخدم العربي (RTL).
+- سيتم بناء باقي الميزات على نفس Next.js project.
+- Backend غير جاهز الآن؛ نعتمد Mock API لتقدم الواجهة.
